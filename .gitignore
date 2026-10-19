@@ -1,0 +1,25 @@
+# Dependencies and build output
+node_modules/
+dist/
+
+# IWSDK dev cache (self-signed dev certificate, emulator state)
+.iwsdk/
+
+# Packaging secrets (PWA/TWA path): never commit
+*.keystore
+*.jks
+twa/
+app-release-*.apk
+*.aab
+
+# Env, logs, OS, editors
+.env
+.env.*
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp

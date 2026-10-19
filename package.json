@@ -1,0 +1,27 @@
+{
+  "name": "spatial-lab-webxr",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Spatial Lab: hands-first WebXR learning lab for trigonometry, geometry and physics on Meta Quest.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@iwsdk/core": "1.0.1",
+    "three": "npm:super-three@0.181.0"
+  },
+  "devDependencies": {
+    "@iwsdk/vite-plugin-dev": "1.0.1",
+    "vite": "^7.1.4"
+  },
+  "overrides": {
+    "three": "npm:super-three@0.181.0"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
