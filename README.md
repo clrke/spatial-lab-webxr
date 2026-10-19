@@ -3,7 +3,7 @@
 **Grab the math.** A hands-first WebXR learning lab for trigonometry, geometry and physics. Pinch a point on a unit circle and watch sin, cos and tan change; stretch a triangle and see its angles still add to 180°; throw a ball and see its path, velocity and forces drawn in the air.
 
 - **Live:** https://clrke.github.io/spatial-lab-webxr/ (open in Meta Quest Browser)
-- **Status:** Module 1 lesson 1 (the unit circle) is playable: pinch the point, drag it round, watch sin/cos/tan and the sine wave, then five challenges. A Reset poke button sits on the desk. Geometry and Physics are not built yet.
+- **Status:** Module 1 has two playable lessons. (1) The unit circle: pinch the point, drag it round, watch sin/cos/tan and the sine wave draw itself, then five challenges. (2) Match the curve: turn two desk dials (amplitude, frequency) until your wave lies on a ghost wave, four rounds. Reset and Next poke buttons sit on the desk. Geometry and Physics are not built yet.
 
 ## Target
 
@@ -73,7 +73,8 @@ Without a headset or the emulator, the page shows a desktop message and a static
 |---|---|
 | `index.html`, `js/main.js` | Boot: IWSDK world (hand tracking optional, with an on-screen prompt when hands are missing), the seated desk and head fit, the Reset button, the desktop fallback |
 | `js/lessons/unit-circle.js` | Module 1: the grabbable unit circle, live triangle and sin/cos/tan bars, the self-drawing wave, the lesson flow and challenges |
-| `js/ui/` | `label.js` (canvas text panels, redrawn at most 10 Hz, face the user), `poke-button.js` (press with a fingertip or ray + pinch) |
+| `js/lessons/match-wave.js` | Module 1 lesson 2: amplitude and frequency dials, ghost wave, match meter |
+| `js/ui/` | `label.js` (canvas text panels, redrawn at most 10 Hz, face the user), `poke-button.js` (press with a fingertip or ray + pinch), `dial.js` (pinch the rim knob and drag it round) |
 | `js/math/angle.js`, `js/audio.js` | Pure angle maths; synthesized sounds (no audio files) |
 | `vite.config.js`, `package.json`, `.nvmrc` | Build setup |
 | `.github/workflows/deploy.yml` | Pages deploy |

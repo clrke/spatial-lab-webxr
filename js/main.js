@@ -1,8 +1,10 @@
 // Spatial Lab: hands-first WebXR lab. Bootstraps the IWSDK world, the seated
-// desk layout, the always-visible Reset button and Module 1 (the unit circle).
+// desk layout, the always-visible Reset and Next buttons and Module 1's lessons
+// (the unit circle, then match the curve).
 import { ReferenceSpaceType, SessionMode, VisibilityState, World, createSystem } from '@iwsdk/core';
 import * as THREE from 'three';
 import { sfx, unlockAudio } from './audio.js';
+import { createMatchWaveLesson } from './lessons/match-wave.js';
 import { createUnitCircleLesson } from './lessons/unit-circle.js';
 import { faceYaw } from './ui/label.js';
 import { PokeButtonSystem, createPokeButton } from './ui/poke-button.js';
@@ -19,7 +21,14 @@ const enterBtn = document.getElementById('enter');
 const fallbackEl = document.getElementById('fallback');
 const overlayEl = document.getElementById('overlay');
 
+let lessons = [];
 let lesson;
+
+function showLesson(i) {
+  lessons.forEach((l, k) => l.setActive(k === i));
+  lesson = lessons[i];
+  lesson.reset();
+}
 let fitPending = false;
 let framesInSession = 0;
 const headWorld = new THREE.Vector3();
@@ -95,7 +104,11 @@ async function start() {
 
   // Module 1: the unit circle stands on the desk, slightly left of centre so the
   // wave strip to its right stays inside a narrow field of view.
-  lesson = createUnitCircleLesson(world, { origin: new THREE.Vector3(-0.2, DESK_Y + 0.2, -0.5) });
+  lessons = [
+    createUnitCircleLesson(world, { origin: new THREE.Vector3(-0.2, DESK_Y + 0.2, -0.5) }),
+    createMatchWaveLesson(world, { origin: new THREE.Vector3(0.02, DESK_Y + 0.17, -0.52), deskY: DESK_Y }),
+  ];
+  showLesson(0);
 
   // Always-visible Reset on the desk's front edge.
   createPokeButton(world, {
@@ -106,6 +119,13 @@ async function start() {
       lesson.reset();
       sfx.success();
     },
+  });
+  // Next lesson (wraps round), so no lesson can trap the user.
+  createPokeButton(world, {
+    text: 'Next',
+    position: new THREE.Vector3(0.4, DESK_Y, -0.33),
+    color: 0x2fa36b,
+    onPress: () => showLesson((lessons.indexOf(lesson) + 1) % lessons.length),
   });
 
   world.registerSystem(PokeButtonSystem);

@@ -1,7 +1,9 @@
 // A desk button you press with a fingertip (PokeInteractable) or point at and
 // pinch (RayInteractable). The cap sinks while pressed; onPress fires once per
-// press, with a short debounce so a jittery fingertip cannot double-fire.
-import { Pressed, PokeInteractable, RayInteractable, createSystem } from '@iwsdk/core';
+// press. A button re-arms only after the finger or ray has left it (or after
+// 1.5 s with no contact): one poke can produce two pointerdowns (down and back up), seen in
+// IWSDK's emulator, and a time debounce alone let Next fire twice.
+import { Hovered, Pressed, PokeInteractable, RayInteractable, createSystem } from '@iwsdk/core';
 import * as THREE from 'three';
 import { sfx } from '../audio.js';
 import { createLabel } from './label.js';
@@ -38,7 +40,7 @@ export function createPokeButton(world, { text, position, onPress, color = 0x4f8
   const groupEntity = world.createTransformEntity(group);
   const entity = world.createTransformEntity(cap, groupEntity);
   entity.addComponent(PokeInteractable).addComponent(RayInteractable);
-  buttons.set(entity, { cap, onPress, lastPress: 0 });
+  buttons.set(entity, { cap, onPress, lastPress: 0, armed: true, pressedOffSince: null });
   return { group, entity };
 }
 
@@ -50,7 +52,8 @@ export class PokeButtonSystem extends createSystem({
       const b = buttons.get(entity);
       if (!b) return;
       const now = performance.now();
-      if (now - b.lastPress < 350) return;
+      if (!b.armed || now - b.lastPress < 350) return;
+      b.armed = false;
       b.lastPress = now;
       sfx.press();
       b.onPress?.();
@@ -58,7 +61,15 @@ export class PokeButtonSystem extends createSystem({
   }
 
   update() {
+    const now = performance.now();
     for (const [entity, b] of buttons) {
+      const pressed = entity.hasComponent(Pressed);
+      if (pressed) b.pressedOffSince = null;
+      else b.pressedOffSince ??= now;
+      // Re-arm once the finger/ray has left, or has stayed off the cap for 1.5 s
+      // (a finger resting nearby can still press again deliberately).
+      const offLongEnough = !pressed && now - b.pressedOffSince > 1500;
+      if (!b.armed && (!entity.hasComponent(Hovered) || offLongEnough)) b.armed = true;
       const target = entity.hasComponent(Pressed) ? 0.009 : 0.015;
       b.cap.position.y += (target - b.cap.position.y) * 0.5;
     }

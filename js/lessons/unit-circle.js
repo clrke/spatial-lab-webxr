@@ -343,5 +343,16 @@ export function createUnitCircleLesson(world, { origin }) {
   readout.flush(performance.now(), true);
   prompt.flush(performance.now(), true);
 
-  return { root, update, reset, labels: [readout.mesh, prompt.mesh], state };
+  // Hide the lesson and stop its point from being grabbable while another lesson runs.
+  function setActive(on) {
+    root.visible = on;
+    if (on && !proxyEntity.hasComponent(OneHandGrabbable)) {
+      proxyEntity.addComponent(OneHandGrabbable, { translate: true, rotate: false });
+    } else if (!on && proxyEntity.hasComponent(OneHandGrabbable)) {
+      world.getSystem(GrabSystem)?.forceRelease(proxyEntity);
+      proxyEntity.removeComponent(OneHandGrabbable);
+    }
+  }
+
+  return { title: 'The unit circle', root, update, reset, setActive, labels: [readout.mesh, prompt.mesh], state };
 }
