@@ -56,7 +56,7 @@ Read on 2026-10-20 from the Devpost pages (fetched with `curl -sL -A "Mozilla/5.
 | Learning is "more effective" | Productivity is about apps that "make you more effective anywhere". A study tool fits that better than "lean-back" Entertainment. |
 | Daily moment | A 5-10 minute lesson a day is a "habit tied to a recurring context" (commute, study break). |
 | Gaming fits only as puzzles | If each lesson is a scored puzzle (hit the target by setting the launch angle), Gaming's "Puzzle ... genres that thrive seated" fits, and the education becomes the theme. |
-| Prize sizes differ | Productivity: $70,000 winner / $35,000 runner-up per division. Gaming: $100,000 / $50,000 (§7). The fit matters more than the money, because Innovation scores "relevance to the chosen track" and Meta can re-assign anyway. |
+| Prize sizes differ | Per division: Gaming $100,000 / $50,000, **Entertainment $100,000 / $50,000**, Productivity $70,000 / $35,000 (Devpost prize list, checked 2026-10-20). The fit matters more than the money, because Innovation scores "relevance to the chosen track" and Meta can re-assign anyway. |
 | Risk | No track names education. Write the Devpost text around being "more effective" and the daily habit (Productivity), or around the puzzles (Gaming), not around both. |
 
 ## Divisions (§4 "Division")
@@ -96,6 +96,20 @@ Read on 2026-10-20 from the Devpost pages (fetched with `curl -sL -A "Mozilla/5.
 | Experience Design | "seated, hands-first, or context-specific use"; "intuitive navigation, clear onboarding, and a habit-forming purpose"; "Passthrough should be purposeful"; "FoV-aware design" |
 | Technical Implementation | "gaze interactions (Unity/Unreal ISDK v207+), hand tracking, passthrough, spatial anchoring, and FoV-aware design"; "**must be performant on Meta Quest hardware (min 60 fps)**, solid and bug-free"; with passthrough, correct scene understanding (MRUK) "in rooms the developer never tested" |
 | Polish & Presentation | "UI/UX, art direction, and sound design"; submission materials; video: "show real gameplay that honestly represents the experience ... Don't lean on AI-generated video to carry the pitch." |
+
+## Last year's base rates (2025 competition, for track choice)
+
+From https://start-developer-competition.devpost.com/ (gallery track filters, winners list; researched 2026-10-20). 2025 had different tracks (Entertainment, Lifestyle, Gaming) and one combined division.
+
+| | Entertainment | Lifestyle (learning, wellness, utilities) | Gaming |
+|---|---|---|---|
+| Submissions (all / new) | 90 / 65 | 212 / 146 | 353 / 222 |
+| Entries per track prize | 30 | 71 | 59 |
+| Win rate, any award | 6.7% | 5.2% | 4.2% |
+
+- 655 submissions, 32 winners. 11 of 12 track prizes went to mixed-reality (passthrough) apps, all Unity/Unreal; 8 of 12 to apps that existed before the window (2026 now has a separate New division).
+- WebXR: 76 entries, 4 awards (both IWSDK-specific awards, which 2026 does not have, and 2 Judge's Choice, including HandCraft XR, a solo IWSDK Entertainment entry).
+- Learning apps that won did so in Lifestyle (Inkphony, IMMERROCK, Language IRL, Compile Crops) or as a Casual game (Le Dino Labo). 2026 has no Lifestyle track, and nothing official says where learning apps go.
 
 ## Prizes and special awards (§7, Special Awards page)
 
