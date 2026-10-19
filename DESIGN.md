@@ -37,7 +37,7 @@ Each module has 3-5 short lessons. Each lesson is: one prompt, hands-on play, on
 | Pattern | Used for | Notes |
 |---|---|---|
 | **Pinch-grab** (near) | Points, corners, balls, dials | IWSDK `OneHandGrabbable` with `useHandPinchForGrab`. A large invisible grab volume (at least 4 cm) around small points. Highlight on hover. |
-| **Two-hand scale/rotate** | Shapes, the circle | `TwoHandsGrabbable { scale: true }`; clamp the scale (0.25-4×) so nothing fills the view |
+| **Two-hand scale/rotate** | Shapes, the circle | `TwoHandsGrabbable { scale: true, scaleMin: [0.25,0.25,0.25], scaleMax: [4,4,4] }` (limits default to unbounded). Grab components are mutually exclusive per entity: never add `OneHandGrabbable` to the same entity |
 | **Distance pinch** | Objects beyond reach | `DistanceGrabbable` (move towards target) for things dropped off the desk |
 | **Poke** | Buttons on the desk edge ("reset", "show squares", "fire") | `PokeInteractable`; buttons at least 3 cm, with sound and a press-depth animation |
 | **Gaze or ray + pinch** | Menus, lesson picker | Hand-ray + pinch on Quest 3/3S (no eye tracking). Eye gaze + pinch when `xr.features.gazeTracking` is granted (look-and-pinch on Meta VR Glasses). Menu items at least 6 cm apart. |
@@ -51,7 +51,7 @@ Robustness:
 
 ## Seated comfort
 
-- **Airplane seat layout:** on entering VR, the desk moves to 40 cm below the user's eyes and about 45 cm forward (scaffold: `fitToHead`). All interactables stay within a 60 cm reach. Nothing is behind the user or on the floor.
+- **Airplane seat layout:** on entering VR, the player rig is shifted so the user's real head (`world.player.head`) lands at the designed eye point: desk 40 cm below the eyes, about 45 cm forward (`fitToHead` in `js/main.js`). All interactables stay within a 60 cm reach. Nothing is behind the user or on the floor.
 - **No locomotion:** the world comes to you; recentre with the system gesture.
 - Static horizon, dark-neutral room, no camera motion, no forced head turns.
 - Pause and resume: exiting VR keeps lesson state (local storage); re-entering resumes in place.

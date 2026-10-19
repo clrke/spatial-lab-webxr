@@ -3,7 +3,7 @@
 **Grab the math.** A hands-first WebXR learning lab for trigonometry, geometry and physics. Pinch a point on a unit circle and watch sin, cos and tan change; stretch a triangle and see its angles still add to 180°; throw a ball and see its path, velocity and forces drawn in the air.
 
 - **Live:** https://clrke.github.io/spatial-lab-webxr/ (open in Meta Quest Browser)
-- **Status:** docs plus a runnable scaffold (one grabbable cube with a live label). The learning modules are not built yet.
+- **Status:** Module 1 lesson 1 (the unit circle) is playable: pinch the point, drag it round, watch sin/cos/tan and the sine wave, then five challenges. A Reset poke button sits on the desk. Geometry and Physics are not built yet.
 
 ## Target
 
@@ -71,7 +71,10 @@ Without a headset or the emulator, the page shows a desktop message and a static
 
 | Path | What |
 |---|---|
-| `index.html`, `js/main.js` | The scaffold: an IWSDK world with hand tracking, a desk, one grabbable cube (pinch to move, two hands to scale), a floating label with its live height and size, and the desktop fallback |
+| `index.html`, `js/main.js` | Boot: IWSDK world (hand tracking optional, with an on-screen prompt when hands are missing), the seated desk and head fit, the Reset button, the desktop fallback |
+| `js/lessons/unit-circle.js` | Module 1: the grabbable unit circle, live triangle and sin/cos/tan bars, the self-drawing wave, the lesson flow and challenges |
+| `js/ui/` | `label.js` (canvas text panels, redrawn at most 10 Hz, face the user), `poke-button.js` (press with a fingertip or ray + pinch) |
+| `js/math/angle.js`, `js/audio.js` | Pure angle maths; synthesized sounds (no audio files) |
 | `vite.config.js`, `package.json`, `.nvmrc` | Build setup |
 | `.github/workflows/deploy.yml` | Pages deploy |
 | [COMPETITION.md](COMPETITION.md) | Meta VR Start Developer Competition 2026 rules that matter |

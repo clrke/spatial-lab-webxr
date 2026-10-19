@@ -20,7 +20,7 @@ Source: `documentation/iwsdk/guides/08-build-deploy.md` ("Deploying to GitHub Pa
 - [ ] Pages source is "GitHub Actions"; `.github/workflows/deploy.yml` builds `dist/` on each push to `main`.
 - [ ] `curl -sI https://clrke.github.io/spatial-lab-webxr/` returns `200`, with no login, paywall or account.
 - [ ] On a Quest 3 and a 3S: open the URL, **Enter VR**, and finish every module with hands only (controllers off). No console errors (`metavr log` or Quest Browser remote DevTools via MQDH: `documentation/web/browser-mqdh`).
-- [ ] Cold start under about 10 s on headset Wi-Fi. Check the `dist/` size (IWSDK bundles fonts: trim with `iwsdkDev({ bundle: { fonts: [...] } })` if needed).
+- [ ] Cold start under about 10 s on headset Wi-Fi. Check the `dist/` size (IWSDK emits 17 lazy font chunks; they do not slow startup. `iwsdkDev({ bundle: { fonts } })` only works once an `iwsdk.config.json` exists, and that file then also drops Havok from builds unless it declares `world.features.physics`).
 - [ ] At least 60 fps everywhere, 72 fps the goal (`documentation/web/webxr-perf`; OVR Metrics Tool).
 - [ ] Freeze: tag `v1.0.0` on the submitted commit. Do not push to `main` from the deadline until the winners are announced (a push redeploys). Put work after the deadline on a branch.
 - [ ] Backup host (optional): the same `dist/` on Vercel (`documentation/web/web-hosting`), in case of a Pages outage. Put only one URL on Devpost; keep the backup ready to share if support asks.
@@ -30,7 +30,7 @@ Source: `documentation/iwsdk/guides/08-build-deploy.md` ("Deploying to GitHub Pa
 Sources: `documentation/web/pwa-overview.md`, `documentation/web/pwa-overview-gs.md` (manifest and icons), `documentation/web/pwa-packaging.md` (Bubblewrap, verified with `@meta-quest/bubblewrap-cli` 1.24.1), `resources/publish-create-app.md`, `resources/publish-release-channels.md`, `resources/publish-release-channels-add-users.md`, `resources/age-groups.md`, `resources/publish-upload-overview.md`.
 
 1. **Web app manifest and icons:** add `public/manifest.webmanifest` (name, `start_url`, `scope`, `display: standalone`) and 192/512 px icons, including a maskable one, and link it from `index.html`.
-2. **Auto-enter VR:** an installed immersive PWA has no 2D page, so it must start the session itself. Already in `js/main.js`: `launchXR()` when `getDigitalGoodsService` exists (installed PWA only).
+2. **Auto-enter VR:** an installed immersive PWA has no 2D page, so it must start the session itself. Already in `js/main.js` (`isInstalledPwa()`): it auto-launches when `display-mode` is standalone/fullscreen or the URL has `?pwa=1`, so set the manifest `start_url` to `./?pwa=1`. Do not use `getDigitalGoodsService` as the check: Quest Browser 154 exposes it in normal tabs, and a launch without a tap fails there ("requires user activation"; seen on a Quest 3S, 2026-10-20).
 3. **Create the app:** Developer Dashboard > Create app (Meta Horizon Store) > note the App ID.
 4. **Package:**
    ```bash
