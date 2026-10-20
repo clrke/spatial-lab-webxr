@@ -56,7 +56,7 @@ async function openCamera(deviceId) {
   await preview.play();
   const track = stream.getVideoTracks()[0];
   log(`opened "${track.label}" ${JSON.stringify(track.getSettings())}`);
-  $('start').disabled = false;
+  $('start').disabled = finished;
   watchFrames();
 }
 
@@ -95,6 +95,8 @@ const events = [];
 const rows = []; // pose samples
 const bodyRows = [];
 const gestures = []; // microgesture events
+const rawButtons = []; // every hand-gamepad button press, any index
+const rawPrev = new Map();
 let lastGesture = '';
 let bodyJointNames = null;
 let sessionInfo = {};
@@ -258,6 +260,15 @@ function onXRFrame(t, frame) {
     beep(1568, 0.05, 0.12);
   });
   sessionInfo.handGamepads = Math.max(sessionInfo.handGamepads ?? 0, pads);
+  for (const src of frame?.session.inputSources ?? []) {
+    if (!src.hand || !src.gamepad) continue;
+    sessionInfo.handButtons = src.gamepad.buttons.length;
+    src.gamepad.buttons.forEach((btn, i) => {
+      const key = `${src.handedness}:${i}`;
+      if (btn.pressed && !rawPrev.get(key)) rawButtons.push({ t: round(now), hand: src.handedness, index: i });
+      rawPrev.set(key, btn.pressed);
+    });
+  }
   if (phase !== 'idle' && phase !== 'done') tickProtocol(now);
   label.setLines(panelText(now));
   label.flush(now);
@@ -321,6 +332,8 @@ function finish(reason) {
   });
   stopRec.then(() => {
     recording = false;
+    $('start').disabled = true;
+    $('start').textContent = 'Reload the page to record again';
     offerDownloads();
     setTimeout(() => session?.end().catch(() => {}), 1500);
   });
@@ -341,6 +354,7 @@ function offerDownloads() {
     protocol: PROTOCOL,
     events,
     microgestures: gestures,
+    handButtonPresses: rawButtons,
     videoFrames: { fields: ['perfMs', 'mediaTimeS'], rows: frameTimes },
     poses: { fields: FIELDS, rows },
     body: bodyJointNames ? { joints: bodyJointNames, fields: 't then x,y,z per joint', rows: bodyRows } : null,
