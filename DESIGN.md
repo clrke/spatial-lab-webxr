@@ -41,6 +41,7 @@ Each module has 3-5 short lessons. Each lesson is: one prompt, hands-on play, on
 | **Distance pinch** | Objects beyond reach | `DistanceGrabbable` (move towards target) for things dropped off the desk |
 | **Poke** | Buttons on the desk edge ("reset", "show squares", "fire") | `PokeInteractable`; buttons at least 3 cm, with sound and a press-depth animation |
 | **Gaze or ray + pinch** | Menus, lesson picker | Hand-ray + pinch on Quest 3/3S (no eye tracking). Eye gaze + pinch when `xr.features.gazeTracking` is granted (look-and-pinch on Meta VR Glasses). Menu items at least 6 cm apart. |
+| **Microgestures** (optional) | Fine steps without grabbing | Thumb swipes/tap on the index finger (Quest Browser hand gamepad buttons 5–9, no permission). Either hand. Lesson 1: swipe left/right turns the point ±15°. Lesson 2: left/right = frequency, forward/back = amplitude. Every action also works by pinching |
 | **Throw** | Physics module | Release velocity from the average of the last ~100 ms of hand positions (one frame is noisy), capped at 8 m/s |
 
 Robustness:

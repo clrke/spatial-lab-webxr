@@ -5,6 +5,7 @@
 //   legcap-<stamp>.webm  and  legcap-<stamp>.json  (labels, poses, frame times).
 // Nothing is uploaded; files are offered as downloads on the headset.
 import * as THREE from 'three';
+import { pollMicrogestures } from '../input/microgestures.js';
 import { createLabel } from '../ui/label.js';
 import { COUNTDOWN, getProtocol, stepDuration } from './protocol.js';
 
@@ -93,6 +94,8 @@ let recStart = 0;
 const events = [];
 const rows = []; // pose samples
 const bodyRows = [];
+const gestures = []; // microgesture events
+let lastGesture = '';
 let bodyJointNames = null;
 let sessionInfo = {};
 
@@ -198,6 +201,7 @@ function panelText(now) {
     text: fps > 1 ? `camera ${fps.toFixed(0)} fps` : 'camera: NO FRAMES (tell the developer)',
     size: 46, weight: 600, color: fps > 1 ? '#7be07b' : '#ffb84f',
   };
+  camLine.text += `   |   microgesture: ${lastGesture || 'none yet'}`;
   if (phase === 'done') return [{ text: 'Done! Thank you.', size: 84 }, { text: 'Leaving VR...', size: 52 }, camLine];
   const s = PROTOCOL[stepIdx];
   if (!s) return [{ text: 'Starting...', size: 70 }, camLine];
@@ -248,6 +252,12 @@ function onXRFrame(t, frame) {
     rows.push(row);
     sampleBody(frame, ref, now);
   }
+  const pads = pollMicrogestures(frame?.session, (g) => {
+    gestures.push({ t: round(now), ...g });
+    lastGesture = `${g.hand} ${g.name}`;
+    beep(1568, 0.05, 0.12);
+  });
+  sessionInfo.handGamepads = Math.max(sessionInfo.handGamepads ?? 0, pads);
   if (phase !== 'idle' && phase !== 'done') tickProtocol(now);
   label.setLines(panelText(now));
   label.flush(now);
@@ -330,6 +340,7 @@ function offerDownloads() {
     timeBase: 'All times are performance.now() ms. Video time (s) = (perfMs - recorder.startPerf) / 1000. videoFrames.mediaTimeS is the preview element clock, not the file clock.',
     protocol: PROTOCOL,
     events,
+    microgestures: gestures,
     videoFrames: { fields: ['perfMs', 'mediaTimeS'], rows: frameTimes },
     poses: { fields: FIELDS, rows },
     body: bodyJointNames ? { joints: bodyJointNames, fields: 't then x,y,z per joint', rows: bodyRows } : null,

@@ -150,6 +150,17 @@ export function createMatchWaveLesson(world, { origin, deskY }) {
     prompt.flush();
   }
 
+  // Microgestures: swipe left/right changes frequency, forward/back amplitude.
+  function onMicrogesture({ name }) {
+    const f = { 'swipe-right': 0.25, 'swipe-left': -0.25 }[name];
+    const A = { 'swipe-forward': 0.05, 'swipe-backward': -0.05 }[name];
+    if (f) freqDial.set(Math.min(3, Math.max(0.5, Math.round((freqDial.value + f) * 4) / 4)));
+    else if (A) ampDial.set(Math.min(1.5, Math.max(0.25, Math.round((ampDial.value + A) * 20) / 20)));
+    else return;
+    sfx.tick();
+    redrawMine();
+  }
+
   function setActive(on) {
     root.visible = on;
     ampDial.setActive(on);
@@ -166,6 +177,7 @@ export function createMatchWaveLesson(world, { origin, deskY }) {
     update,
     reset,
     setActive,
+    onMicrogesture,
     labels: [formula.mesh, prompt.mesh, ampDial.label, freqDial.label],
     state,
   };

@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { sfx, unlockAudio } from './audio.js';
 import { createMatchWaveLesson } from './lessons/match-wave.js';
 import { createUnitCircleLesson } from './lessons/unit-circle.js';
+import { pollMicrogestures } from './input/microgestures.js';
 import { faceYaw } from './ui/label.js';
 import { PokeButtonSystem, createPokeButton } from './ui/poke-button.js';
 
@@ -64,6 +65,7 @@ class LabSystem extends createSystem({}) {
 
     // After a short grace period, prompt if no hands are tracked.
     const msg = inXR && framesInSession > 90 ? handsMessage(world) : null;
+    if (inXR) pollMicrogestures(world.renderer.xr.getSession(), (g) => lesson.onMicrogesture?.(g));
     lesson.update(Math.min(delta, 0.1), { handsMessage: msg });
 
     // Labels turn to face the user (yaw only, so text stays upright).

@@ -354,5 +354,25 @@ export function createUnitCircleLesson(world, { origin }) {
     }
   }
 
-  return { title: 'The unit circle', root, update, reset, setActive, labels: [readout.mesh, prompt.mesh], state };
+  // Microgestures (right or left hand): swipe right/left turns the point by ±15°.
+  function onMicrogesture({ name }) {
+    const dir = name === 'swipe-right' ? 1 : name === 'swipe-left' ? -1 : 0;
+    if (!dir || state.held) return;
+    const step = (Math.PI / 12) * dir;
+    const from = state.angle;
+    state.unwrapped += step;
+    for (let k = 0; k <= 8; k++) {
+      const a = from + (step * k) / 8;
+      const i = Math.min(SAMPLES - 1, Math.floor((wrapPositive(a) / TAU) * SAMPLES));
+      if (markVisited(i)) coverage += 1 / SAMPLES;
+    }
+    state.angle = snapAngle(from + step);
+    if (state.step === 'intro') {
+      state.step = 'explore';
+      setPrompt('Keep going all the way around', 'Pinch the point, or swipe your thumb');
+    }
+    sfx.tick();
+  }
+
+  return { title: 'The unit circle', root, update, reset, setActive, onMicrogesture, labels: [readout.mesh, prompt.mesh], state };
 }

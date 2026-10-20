@@ -21,6 +21,7 @@ export const PROTOCOL = [
   { action: 'neg_hands', side: 'none', text: 'Look down. Move your hands around your lap; legs still', seconds: 15, look: 'down' },
   { action: 'neg_head', side: 'none', text: 'Turn your head slowly left and right; legs still', seconds: 12, look: 'any' },
   { action: 'neg_nod', side: 'none', text: 'Nod slowly; legs still', seconds: 10, look: 'any' },
+  { action: 'microgestures', side: 'none', text: 'Right hand: tap thumb on index finger 3x, then swipe thumb left, right, forward, back', seconds: 15, look: 'any' },
   { action: 'neg_shift', side: 'none', text: 'Shift around in your chair; feet stay put', seconds: 10, look: 'down' },
 ];
 
@@ -42,7 +43,9 @@ export function getProtocol(search = location.search) {
   if (part === '1') return PROTOCOL.slice(0, half);
   if (part === '2') return [PROTOCOL[1], ...PROTOCOL.slice(half)];
   if (!params.has('quick')) return PROTOCOL;
-  return [PROTOCOL[0], PROTOCOL[2], PROTOCOL[PROTOCOL.length - 1]].map((s) =>
-    s.reps ? { ...s, reps: 2 } : { ...s, seconds: 2 },
-  );
+  const micro = PROTOCOL.find((s) => s.action === 'microgestures');
+  return [
+    ...[PROTOCOL[0], PROTOCOL[2], PROTOCOL[PROTOCOL.length - 1]].map((s) => (s.reps ? { ...s, reps: 2 } : { ...s, seconds: 2 })),
+    micro,
+  ];
 }
