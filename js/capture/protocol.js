@@ -30,9 +30,18 @@ export function stepDuration(step) {
   return step.seconds ?? step.reps * step.period + 0.5;
 }
 
-/** ?quick=1: a 20-second dry run (3 short steps) for testing the tool. */
+/**
+ * ?quick=1: a 20-second dry run (3 short steps) for testing the tool.
+ * ?part=1 / ?part=2: the full script split into two ~3.5-minute halves, so the
+ * recorder can rest their neck in between.
+ */
 export function getProtocol(search = location.search) {
-  if (!new URLSearchParams(search).has('quick')) return PROTOCOL;
+  const params = new URLSearchParams(search);
+  const part = params.get('part');
+  const half = Math.ceil(PROTOCOL.length / 2);
+  if (part === '1') return PROTOCOL.slice(0, half);
+  if (part === '2') return [PROTOCOL[1], ...PROTOCOL.slice(half)];
+  if (!params.has('quick')) return PROTOCOL;
   return [PROTOCOL[0], PROTOCOL[2], PROTOCOL[PROTOCOL.length - 1]].map((s) =>
     s.reps ? { ...s, reps: 2 } : { ...s, seconds: 2 },
   );

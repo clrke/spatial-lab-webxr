@@ -351,7 +351,16 @@ function offerDownloads() {
 }
 
 // ---------------------------------------------------------------- wiring
-$('perm').addEventListener('click', () => allowCamera().catch((e) => log(`camera error: ${e.name}: ${e.message}`)));
+$('perm').addEventListener('click', () =>
+  allowCamera().catch((e) => {
+    log(`camera error: ${e.name}: ${e.message}`);
+    if (e.name === 'NotFoundError') {
+      log('No camera visible to the browser. The Browser app itself probably lacks camera permission:'
+        + ' allow Camera for Browser in the headset settings (app permissions), restart Browser, and try again.'
+        + ' Please tell the developer whether Browser asked you for it.');
+    }
+  }),
+);
 $('cams').addEventListener('change', (e) => openCamera(e.target.value).catch((err) => log(`camera error: ${err.message}`)));
 $('start').addEventListener('click', () => {
   $('start').disabled = true;
