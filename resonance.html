@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Spatial Lab: grab the math. Hands-first WebXR lab for trigonometry, geometry and physics." />
+    <link rel="icon" href="data:," />
+    <title>Resonance (prototype)</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #10141c; color: #e8edf5;
+        font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+      #scene-container { position: fixed; inset: 0; }
+      #overlay { position: fixed; inset: 0; display: flex; align-items: flex-end; justify-content: center;
+        pointer-events: none; }
+      #card { pointer-events: auto; max-width: 30rem; margin: 1rem; padding: 1.5rem 1.75rem;
+        background: rgba(16, 20, 28, 0.88); border: 1px solid #2c3648; border-radius: 14px; }
+      h1 { margin: 0 0 0.25rem; font-size: 1.6rem; }
+      p { margin: 0.5rem 0; }
+      .muted { color: #9aa7bb; font-size: 0.9rem; }
+      button { margin-top: 0.75rem; padding: 0.7rem 1.4rem; font-size: 1.05rem; border: 0; border-radius: 10px;
+        background: #4f8cff; color: #fff; cursor: pointer; }
+      button[hidden], [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="scene-container"></div>
+    <div id="overlay">
+      <div id="card">
+        <h1>Resonance</h1>
+        <p>Music is circles. Spin two points of light in your room and hear the chord they make. (Prototype)</p>
+        <p id="status" class="muted">Checking for WebXR...</p>
+        <button id="enter" hidden>Enter VR</button>
+        <p id="fallback" class="muted" hidden>
+          This lab needs a VR headset. Open this page in the Meta Quest Browser on a
+          Quest 3 or 3S, then press Enter VR. Hand tracking is used; no controllers needed.
+          On a desktop you are seeing a static preview.
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./js/resonance/main.js"></script>
+  </body>
+</html>
