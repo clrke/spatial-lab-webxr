@@ -76,6 +76,7 @@ Without a headset or the emulator, the page shows a desktop message and a static
 | `js/lessons/match-wave.js` | Module 1 lesson 2: amplitude and frequency dials, ghost wave, match meter |
 | `js/ui/` | `label.js` (canvas text panels, redrawn at most 10 Hz, face the user), `poke-button.js` (press with a fingertip or ray + pinch), `dial.js` (pinch the rim knob and drag it round) |
 | `js/math/angle.js`, `js/audio.js` | Pure angle maths; synthesized sounds (no audio files) |
+| `capture.html`, `js/capture/` | Experimental: leg-capture tool (headset camera + head/hand poses + labelled seated leg motions) for building optional leg input. Live at `/capture.html` (`?quick=1` for a 20 s dry run) |
 | `vite.config.js`, `package.json`, `.nvmrc` | Build setup |
 | `.github/workflows/deploy.yml` | Pages deploy |
 | [COMPETITION.md](COMPETITION.md) | Meta VR Start Developer Competition 2026 rules that matter |

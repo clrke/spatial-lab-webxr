@@ -102,3 +102,12 @@ Passthrough: not in v1. Add a mixed-reality mode later only if the real desk bec
 | **Best Reason to Come Back** | A mastery map (each concept fills in), a daily 3-minute challenge, a streak, and visible progress between sessions |
 | **Best Accessibility Forward** | Seated by default, one-hand mode, high contrast, narration and captions, no timers |
 | Boldest Original Concept | Real-scale physics and geometry: a parabola you throw yourself |
+
+## Experimental: seated leg input (optional, on top of hands)
+
+Goal: foot taps, stomps and knee lifts while seated as an extra input. Status: data collection.
+
+- **Rules:** hands stay the complete input (hands-first is required), so every leg action has a hand equivalent; leg input is off by default, behind a toggle, with adjustable sensitivity, and never needed (wheelchair users, amputees, limited mobility). Only the headset is used (no third-party devices).
+- **What the platform offers (checked 2026-10-20):** Quest has no leg sensors. Meta's body tracking legs are generated from the upper body (Generative Legs), so deliberate taps are invisible to it; the WebXR `body-tracking` feature is not in IWSDK and its availability in Quest Browser is unverified (the capture tool requests it and records it if granted). Quest Browser 154 exposes the passthrough cameras to web pages through `getUserMedia` (Quest 3S: "camera 0" 1280×960 and "camera 1" 640×480, 30 fps); frames could not be verified without someone wearing the headset. No camera pose or intrinsics on the web.
+- **Planned approach:** motion energy in the lower image regions (downscaled grayscale frame differences), gated on head pitch (looking down) and low head motion, with hands masked out, classified with thresholds or a tiny classifier. Off-the-shelf pose models (MediaPipe, MoveNet) expect third-person views and are unlikely to work on a top-down view of your own knees.
+- **Data:** `capture.html` records the camera (WebM) plus head and hand poses (JSON) through a beep-guided script of seated motions and negatives (about 7 minutes), saved as downloads on the headset. Camera frames are personal data: processed on-device, never uploaded by the app.

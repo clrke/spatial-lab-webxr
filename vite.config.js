@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     target: 'esnext',
-    rollupOptions: { input: './index.html' },
+    rollupOptions: { input: { main: './index.html', capture: './capture.html' } },
   },
   esbuild: { target: 'esnext' },
   resolve: { dedupe: ['three'] },
