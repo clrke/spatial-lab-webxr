@@ -36,7 +36,7 @@ Read on 2026-10-20 from the Devpost pages (fetched with `curl -sL -A "Mozilla/5.
 - You may not both "submit an Entry as a solo entrant and serve as a Team Representative".
 - Being a non-Representative team member does not count as an entry.
 - One prize per entry (§7); if eligible for several, the highest value (FAQ).
-- **For this repo:** Spatial Lab is a candidate for the owner's single entry. Submitting it rules out any other entry by him.
+- **For this repo:** the owner's single entry is **Soothing Bots** (native Unity app, App ID 1091303100363781, Competition channel; decided 2026-10-29). Spatial Lab is NOT submitted: submitting it would break the one-entry rule.
 
 ## Tracks (§4 "Track")
 

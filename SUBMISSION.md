@@ -1,5 +1,7 @@
 # Submission checklist: Spatial Lab
 
+> **Not submitted (2026-10-29):** the owner's single entry is Soothing Bots (see COMPETITION.md, one entry per person). This checklist is kept for reference only; do not submit Spatial Lab.
+
 Rules: [COMPETITION.md](COMPETITION.md). Meta doc paths below open with `metavr docs fetch "<path>"` or under https://developers.meta.com/vr/.
 
 **Deadline: 2026-11-18 12:00 PT** (entry period ends; no changes after that, until the winner announcement on about 2026-12-11).
