@@ -160,6 +160,27 @@ describe('wrapLines never splits a sung-together group', () => {
   it('empty text stays one empty line', () => {
     assert.deepEqual(wrapLines('', chars, 20), ['']);
   });
+
+  it('keeps minus signs and spacing (readout line)', () => {
+    assert.deepEqual(wrapLines('sin −1.00    cos 0.00    tan undefined', chars, 20),
+      ['sin −1.00    cos', '0.00    tan', 'undefined']);
+  });
+
+  it('keeps trailing punctuation left, opening punctuation right', () => {
+    assert.deepEqual(wrapLines('Hello, brave new world', chars, 12),
+      ['Hello,', 'brave new', 'world']);
+    assert.deepEqual(wrapLines('Leaving VR...', chars, 20), ['Leaving VR...']);
+  });
+
+  it('never splits a contraction across lines', () => {
+    // The implicit "not" has no surface of its own: it rides with "can't".
+    assert.deepEqual(wrapLines("I can't stop", chars, 8), ["I can't", 'stop']);
+  });
+
+  it('rebalances a stranded last unit', () => {
+    assert.deepEqual(wrapLines('Find a second angle where sin θ = 0.5', chars, 31),
+      ['Find a second angle where', 'sin θ = 0.5']);
+  });
 });
 
 describe('pickupCount sings opening articles as pickups', () => {

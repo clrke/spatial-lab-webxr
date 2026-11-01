@@ -310,9 +310,9 @@ const cache = new Map();
 /**
  * Parts of speech and binds of a line's words.
  * @param {string} text the line
- * @returns {Array<{text:string, pos:string, bind:number, article:boolean}>} per word: its
- *   text, part of speech, bind to the word before it (0 for the first word and across
- *   punctuation), and whether it is an article
+ * @returns {Array<{text:string, pos:string, bind:number, article:boolean, charStart:number, charEnd:number}>}
+ *   per word: its text, part of speech, bind to the word before it (0 for the first
+ *   word and across punctuation), whether it is an article, and its span in text
  */
 export function wordChunks(text) {
   const key = String(text ?? '');
@@ -336,7 +336,10 @@ export function wordChunks(text) {
       if (lettersOf(clean(w.text)) === 'by'
         && lettersOf(clean(words[i + 1]?.text)) === lettersOf(clean(words[i - 1].text))) bind = LEAN;
     }
-    return { text: w.text, pos: pos[i], bind, article: ARTICLES.has(lettersOf(clean(w.text))) };
+    return {
+      text: w.text, pos: pos[i], bind, article: ARTICLES.has(lettersOf(clean(w.text))),
+      charStart: w.charStart, charEnd: w.charEnd,
+    };
   });
   // A hook repeated in the line sings its pair the same way ("School garden, school garden").
   for (let i = 1; i < out.length; i++) {
@@ -376,46 +379,86 @@ export function groupTexts(text) {
   return groupsOf(chunks).map((g) => g.map((i) => chunks[i].text));
 }
 
+/** Punctuation that opens the next word (stays with it across a wrap). */
+const PREFIX_OPEN = new Set(['(', '[', '"', "'", '“', '‘', '+', '·', '/']);
+
+/**
+ * The character offset of the break between words[k-1] and words[k]: trailing
+ * punctuation stays left ("Hello,"), opening punctuation goes right ("−1.00").
+ */
+function boundary(text, words, k) {
+  const prevEnd = words[k - 1].charEnd;
+  const nextStart = words[k].charStart;
+  if (nextStart <= prevEnd) return prevEnd; // shared span ("can't" → can + not)
+  const gap = text.slice(prevEnd, nextStart);
+  const m = /^(\s*)(.*?)(\s*)$/.exec(gap);
+  if (!m[2]) return prevEnd + m[1].length;
+  const minusSign = (m[2] === '-' || m[2] === '−') && /^\d/.test(text.slice(nextStart, nextStart + 1));
+  if (PREFIX_OPEN.has(m[2][0]) || minusSign) return prevEnd + m[1].length;
+  return nextStart - m[3].length;
+}
+
+/** The original text spanned by words[fromIdx..toIdx], edge whitespace trimmed. */
+function span(text, words, fromIdx, toIdx) {
+  const start = fromIdx === 0 ? 0 : boundary(text, words, fromIdx);
+  const end = toIdx === words.length - 1 ? text.length : boundary(text, words, toIdx + 1);
+  return text.slice(start, end).trim();
+}
+
 /**
  * Wrap a line so a sung-together group never splits across lines unless the group
- * alone is wider than maxWidth (then its words split as a last resort).
+ * alone is wider than maxWidth (then its words split as a last resort). Lines are
+ * slices of the original text, so punctuation and spacing survive ("sin −1.00",
+ * "can't", "Hello,"); a lone unit stranded on the last line pulls the previous
+ * line's last unit down when it fits.
  * @param {string} text the line
  * @param {(s:string) => number} measure width of a string, same units as maxWidth
  * @param {number} maxWidth available width
  * @returns {string[]} wrapped lines
  */
 export function wrapLines(text, measure, maxWidth) {
-  const chunks = wordChunks(text);
-  if (!chunks.length) return [text];
-  const words = chunks.map((c) => c.text);
-  const widthOf = (idxs) => measure(idxs.map((i) => words[i]).join(' '));
+  const words = wordChunks(text);
+  if (!words.length) return [text];
+  const widthOf = (fromIdx, toIdx) => measure(span(text, words, fromIdx, toIdx));
+  // A break is only legal where word spans don't overlap: expansion pieces
+  // ("can't" → can + not) share one span and stay in one unit.
+  const groups = [];
+  for (const g of groupsOf(words)) {
+    const last = groups[groups.length - 1];
+    if (last && words[g[0]].charStart < words[last[last.length - 1]].charEnd) last.push(...g);
+    else groups.push([...g]);
+  }
   const units = [];
-  for (const g of groupsOf(chunks)) {
-    if (widthOf(g) <= maxWidth || g.length < 2) {
-      units.push(g);
+  for (const g of groups) {
+    if (widthOf(g[0], g[g.length - 1]) <= maxWidth || g.length < 2) {
+      units.push([g[0], g[g.length - 1]]);
       continue;
     }
-    let wcur = [];
+    let start = g[0];
     for (const i of g) {
-      if (wcur.length && widthOf([...wcur, i]) > maxWidth) {
-        units.push(wcur);
-        wcur = [];
+      const shared = i > start && words[i].charStart < words[i - 1].charEnd;
+      if (i > start && !shared && widthOf(start, i) > maxWidth) {
+        units.push([start, i - 1]);
+        start = i;
       }
-      wcur.push(i);
     }
-    if (wcur.length) units.push(wcur);
+    units.push([start, g[g.length - 1]]);
   }
   const lines = [];
-  let cur = [];
   for (const u of units) {
-    if (cur.length && widthOf([...cur, ...u]) <= maxWidth) cur.push(...u);
-    else {
-      if (cur.length) lines.push(cur);
-      cur = [...u];
+    const last = lines[lines.length - 1];
+    if (last && widthOf(last[0][0], u[1]) <= maxWidth) last.push(u);
+    else lines.push([u]);
+  }
+  for (let i = lines.length - 1; i >= 1; i--) {
+    if (lines[i].length !== 1 || lines[i - 1].length < 2) continue;
+    const moved = lines[i - 1][lines[i - 1].length - 1];
+    if (widthOf(moved[0], lines[i][0][1]) <= maxWidth) {
+      lines[i].unshift(moved);
+      lines[i - 1].pop();
     }
   }
-  if (cur.length) lines.push(cur);
-  return lines.map((idxs) => idxs.map((i) => words[i]).join(' '));
+  return lines.map((l) => span(text, words, l[0][0], l[l.length - 1][1]));
 }
 
 /**
