@@ -2,6 +2,7 @@
 // The texture is redrawn only when the text changes, and at most `maxHz` times
 // a second (DESIGN.md budget: 10 Hz), so dragging does not re-upload every frame.
 import * as THREE from 'three';
+import { wrapLines } from '../sing/phrasing.js';
 
 export function createLabel({ widthM = 0.42, heightM = 0.12, maxHz = 10 } = {}) {
   const canvas = document.createElement('canvas');
@@ -33,10 +34,29 @@ export function createLabel({ widthM = 0.42, heightM = 0.12, maxHz = 10 } = {}) 
     ctx.fill();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const total = lines.reduce((sum, l) => sum + (l.size ?? 64) * 1.3, 0);
-    let y = (h - total) / 2;
+    // Overlong lines wrap, keeping each sung-together phrase (article/adjectives +
+    // noun) on one line; lines that fit are drawn exactly as before.
+    const maxW = w - 48;
+    const laid = [];
     for (const l of lines) {
       const size = l.size ?? 64;
+      ctx.font = `${l.weight ?? 700} ${size}px system-ui, sans-serif`;
+      if (ctx.measureText(l.text).width <= maxW) laid.push({ ...l, size });
+      else {
+        const measure = (s) => ctx.measureText(s).width;
+        for (const part of wrapLines(l.text, measure, maxW)) laid.push({ ...l, text: part, size });
+      }
+    }
+    // If wrapping overflowed the panel vertically, shrink to fit rather than clip.
+    let total = laid.reduce((sum, l) => sum + l.size * 1.3, 0);
+    if (total > h) {
+      const k = h / total;
+      for (const l of laid) l.size = Math.max(20, Math.floor(l.size * k));
+      total = laid.reduce((sum, l) => sum + l.size * 1.3, 0);
+    }
+    let y = (h - total) / 2;
+    for (const l of laid) {
+      const size = l.size;
       y += (size * 1.3) / 2;
       ctx.font = `${l.weight ?? 700} ${size}px system-ui, sans-serif`;
       ctx.fillStyle = l.color ?? '#ffffff';

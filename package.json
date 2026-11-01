@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test js/sing/phrasing.test.mjs"
   },
   "dependencies": {
     "@iwsdk/core": "1.0.1",
